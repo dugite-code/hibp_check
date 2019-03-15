@@ -1,0 +1,24 @@
+Email Accounts:
+  - example@localhost
+
+SMTP Settings:
+  Subject: Email found in account breach report
+  From:
+  Server:
+  Username:
+  Password:
+
+Template Settings:
+  Administrator: your systems administrator
+  Template Directory: Templates
+  Email Template: base.tmpl
+  Breach Template: breaches.tmpl
+
+Logging Settings:
+  #Master switch
+  Enabled: True
+  #CRITICAL, ERROR, WARNING, INFO, DEBUG
+  Level: DEBUG
+  Log to Console: True
+  Log to File: True
+  Logfile: hibp.log

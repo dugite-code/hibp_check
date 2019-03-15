@@ -1,0 +1,6 @@
+/__pycache__
+/config.yml
+/env
+/*.log
+/data/*
+!*.keep
