@@ -37,15 +37,15 @@ def compare( old, new ):
 
 
 def getbreaches( root, email ):
-	logger.debug( 'Fetching Breaches for: ' + email )
+	logger.info( 'Fetching Breaches for: ' + email )
 	r = requests.get( 'https://haveibeenpwned.com/api/v2/breachedaccount/' + email )
 
-	filename = email.replace( '@', '_' ).replace( '.', '_' )
+	filename = email.replace( '@', '_' ).replace( '.', '_' ) + '.dat'
 	filepath = os.path.join( root, 'data', filename )
 	logger.debug( 'Accound data store: ' + str( filepath ) )
 
 	if ( r.status_code == 200 ):
-		logger.debug( 'Breaches found: ' + str( len( r.json() ) ) )
+		logger.info( 'Breaches found: ' + str( len( r.json() ) ) )
 		if os.path.isfile(filepath):
 			old_data = pickle.load( open( filepath, "rb" ) )
 			new_data = compare( old_data, r.json() )
@@ -130,6 +130,11 @@ if __name__ == '__main__':
 							action='store_true',
 							default=False,
 							help='Disable email output' )
+	parser.add_argument( '-d', '--delete-data',
+							dest='ddata',
+							action='store_true',
+							default=False,
+							help='Delete saved breach data' )
 
 	args = parser.parse_args()
 
@@ -187,6 +192,16 @@ if __name__ == '__main__':
 	if state != 'stable':
 		logger.warning( 'State is not stable: ' + state )
 
+	if args.ddata == True:
+		filepath = os.path.join( root, 'data' )
+		logger.info( 'Data filepath: ' + filepath )
+		for (dirpath, dirnames, filenames) in os.walk(filepath):
+			for file in filenames:
+				if file.endswith('.dat'):
+					logger.info( 'Deleting: ' + file )
+					os.remove( os.path.join( filepath, file ) )
+		exit()
+
 	email_template = getrender( root, config['Template Settings']['Email Template'],  config['Template Settings']['Template Directory'])
 	breach_template = getrender( root, config['Template Settings']['Breach Template'],  config['Template Settings']['Template Directory'])
 
@@ -237,7 +252,7 @@ if __name__ == '__main__':
 		msg.attach(part2)
 
 		if args.nemail == False:
-			logger.debug( 'Sending email to: ' + email )
+			logger.info( 'Sending email to: ' + email )
 			# Send the message via local SMTP server.
 			s = smtplib.SMTP(config['SMTP Settings']['Server'])
 			s.login(config['SMTP Settings']['Username'], config['SMTP Settings']['Password'])
